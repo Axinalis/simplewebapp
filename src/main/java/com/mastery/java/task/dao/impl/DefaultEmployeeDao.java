@@ -32,10 +32,6 @@ public class DefaultEmployeeDao implements EmployeeDao {
 
     public DefaultEmployeeDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        idCounter = jdbcTemplate.queryForObject("SELECT MAX(employee_id) FROM employee", Long.class);
-        if(idCounter == null){
-            idCounter = 1L;
-        }
     }
 
     @Override
@@ -56,17 +52,18 @@ public class DefaultEmployeeDao implements EmployeeDao {
 
     @Override
     public Employee create(Employee employee) {
-        String sql = "INSERT INTO employee(employee_id, first_name, second_name, department_id, job_title, gender," +
-                " date_of_birth) VALUES(?,?,?,?,?,?,?)";
-        jdbcTemplate.update(sql, ++idCounter,
+        String sql = "INSERT INTO employee(first_name, second_name, department_id, job_title, gender," +
+                " date_of_birth) VALUES(?,?,?,?,?,?)";
+        jdbcTemplate.update(sql,
                 employee.getFirstName(),
                 employee.getSecondName(),
                 employee.getDepartmentId(),
                 employee.getJobTitle(),
                 employee.getGender().toString(),
                 employee.getDateOfBirth());
-        employee.setEmployeeId(idCounter);
-        return employee;
+        //Maybe "INSERT INTO ... VALUES ... RETURNING employee_id" could be more efficient, but it sure would complicate this code
+        sql = "SELECT * FROM employee WHERE employee_id = (SELECT currval(pg_get_serial_sequence('employee','employee_id')))";
+        return jdbcTemplate.queryForObject(sql, rowMapper);
     }
 
     @Override
@@ -81,7 +78,9 @@ public class DefaultEmployeeDao implements EmployeeDao {
                 employee.getGender().toString(),
                 employee.getDateOfBirth(),
                 id);
-        return employee;
+
+        sql = "SELECT * FROM employee WHERE employee_id = ?";
+        return jdbcTemplate.queryForObject(sql, rowMapper, id);
     }
 
     @Override

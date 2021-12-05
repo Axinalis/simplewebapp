@@ -1,5 +1,5 @@
 CREATE TABLE employee (
-employee_id INT NOT NULL,
+employee_id SERIAL,
 first_name VARCHAR(50) NOT NULL,
 second_name VARCHAR(50),
 department_id INT NOT NULL,
