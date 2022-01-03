@@ -5,13 +5,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EmployeeService {
 
-    List<Employee> employeeList();
-    Employee employeeById(@PathVariable Long id);
-    Employee createEmployee(@RequestBody Employee employee);
-    Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee);
-    void deleteEmployee(@PathVariable Long id);
+    List<Employee> employeeList(Map<String, String> params);
+    Employee employeeById(Long id);
+    Employee createEmployee( Employee employee);
+    Employee updateEmployee(Long id, Employee employee);
+    void deleteEmployee(Long id);
 
 }

@@ -9,6 +9,7 @@ import org.mockito.Mock;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -52,7 +53,7 @@ public class EmployeeControllerTest {
         employee4.setDepartmentId(4L);
         list.add(employee4);
         controller = new EmployeeController(service);
-        when(service.employeeList()).thenReturn(list);
+        when(service.employeeList(new HashMap<>())).thenReturn(list);
         when(service.employeeById(1L)).thenReturn(employee1);
         when(service.employeeById(2L)).thenReturn(employee2);
         when(service.employeeById(3L)).thenReturn(employee3);
@@ -62,7 +63,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testEmployeeList(){
-        List<Employee> list = controller.employeeList();
+        List<Employee> list = controller.employeeList(new HashMap<>());
 
         assertNotNull(list);
         assertTrue(list.size() > 0);
