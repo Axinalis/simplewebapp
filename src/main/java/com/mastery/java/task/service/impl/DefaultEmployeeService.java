@@ -1,49 +1,63 @@
 package com.mastery.java.task.service.impl;
 
-import com.mastery.java.task.dao.EmployeeDao;
-import com.mastery.java.task.dto.Employee;
+import com.mastery.java.task.dto.EmployeeDto;
+import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.exceptions.NotFoundException;
+import com.mastery.java.task.jpa.EmployeeRepository;
 import com.mastery.java.task.service.EmployeeService;
+import com.mastery.java.task.service.EmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+@Component
 public class DefaultEmployeeService implements EmployeeService {
 
-    private EmployeeDao employeeDao;
+    private EmployeeRepository repository;
 
-    public DefaultEmployeeService(EmployeeDao employeeDao){
-        this.employeeDao = employeeDao;
+    public DefaultEmployeeService(@Autowired EmployeeRepository repository){
+        this.repository = repository;
     }
 
     @Override
-    public List<Employee> employeeList() {
-        return employeeDao.list();
+    public List<EmployeeDto> employeeList(Map<String, String> params) {
+        if(params == null || params.get("firstName") == null || params.get("secondName") == null){
+            return repository.findAll().stream().map(EmployeeMapper::mapToDto).collect(Collectors.toList());
+        } else {
+            return repository.findByFirstNameAndSecondName(params.get("firstName"), params.get("secondName"))
+                    .stream().map(EmployeeMapper::mapToDto).collect(Collectors.toList());
+        }
     }
 
     @Override
-    public Employee employeeById(Long id) {
+    public EmployeeDto employeeById(Long id) {
         if(id == null){
             throw new NotFoundException("Id is null");
         }
-        return employeeDao.get(id);
+        return repository.findById(id).map(EmployeeMapper::mapToDto).orElseThrow(NotFoundException::new);
     }
 
     @Override
-    public Employee createEmployee(Employee employee) {
-        if(employee == null){
+    public EmployeeDto createEmployee(EmployeeDto employeeDto) {
+        if(employeeDto == null){
             throw new NotFoundException("Employee is null");
         }
-        return employeeDao.create(employee);
+        employeeDto.setEmployeeId(null);
+        Employee employee = repository.save(EmployeeMapper.mapToEntity(employeeDto));
+        return EmployeeMapper.mapToDto(employee);
     }
 
     @Override
-    public Employee updateEmployee(Long id, Employee employee) {
-        if(id == null || employee == null){
+    public EmployeeDto updateEmployee(Long id, EmployeeDto employeeDto) {
+        if(id == null || employeeDto == null){
             throw new NotFoundException("Id or employee is null");
         }
-        return employeeDao.update(id, employee);
+        employeeDto.setEmployeeId(id);
+        Employee employee = repository.save(EmployeeMapper.mapToEntity(employeeDto));
+        return EmployeeMapper.mapToDto(employee);
     }
 
     @Override
@@ -51,6 +65,6 @@ public class DefaultEmployeeService implements EmployeeService {
         if(id == null){
             throw new NotFoundException("Id is null");
         }
-        employeeDao.delete(id);
+        repository.deleteById(id);
     }
 }

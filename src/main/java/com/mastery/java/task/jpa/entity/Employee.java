@@ -1,20 +1,30 @@
-package com.mastery.java.task.dto;
+package com.mastery.java.task.jpa.entity;
 
-import org.springframework.stereotype.Component;
+import com.mastery.java.task.dto.Gender;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
-@Component
+@Entity
 public class Employee {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "employee_id")
     private Long employeeId;
+    @Column(name = "first_name")
     private String firstName;
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
     private Gender gender;
+    @Column(name = "second_name")
     private String secondName;
+    @Column(name = "department_id")
     private Long departmentId;
+    @Column(name = "job_title")
     private String jobTitle;
-
+    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     public Employee() {

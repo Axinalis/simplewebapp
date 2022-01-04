@@ -1,18 +1,12 @@
 package com.mastery.java.task.rest;
 
-import com.mastery.java.task.dao.EmployeeDao;
-import com.mastery.java.task.dao.impl.DefaultEmployeeDao;
-import com.mastery.java.task.dto.Employee;
+import com.mastery.java.task.dto.EmployeeDto;
+import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.service.EmployeeService;
-import com.mastery.java.task.service.impl.DefaultEmployeeService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("employee")
@@ -25,22 +19,22 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<Employee> employeeList(){
-        return employeeService.employeeList();
+    public List<EmployeeDto> employeeList(@RequestParam Map<String, String> params) {
+        return employeeService.employeeList(params);
     }
 
     @GetMapping("{id}")
-    public Employee employeeById(@PathVariable Long id){
+    public EmployeeDto employeeById(@PathVariable Long id){
         return employeeService.employeeById(id);
     }
 
     @PostMapping()
-    public Employee createEmployee(@RequestBody Employee employee){
+    public EmployeeDto createEmployee(@RequestBody EmployeeDto employee){
         return employeeService.createEmployee(employee);
     }
 
     @PutMapping("{id}")
-    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee){
+    public EmployeeDto updateEmployee(@PathVariable Long id, @RequestBody EmployeeDto employee){
         return employeeService.updateEmployee(id, employee);
     }
 

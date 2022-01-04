@@ -1,17 +1,17 @@
 package com.mastery.java.task.service;
 
-import com.mastery.java.task.dto.Employee;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.mastery.java.task.dto.EmployeeDto;
+import com.mastery.java.task.jpa.entity.Employee;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EmployeeService {
 
-    List<Employee> employeeList();
-    Employee employeeById(@PathVariable Long id);
-    Employee createEmployee(@RequestBody Employee employee);
-    Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee);
-    void deleteEmployee(@PathVariable Long id);
+    List<EmployeeDto> employeeList(Map<String, String> params);
+    EmployeeDto employeeById(Long id);
+    EmployeeDto createEmployee(EmployeeDto employee);
+    EmployeeDto updateEmployee(Long id, EmployeeDto employee);
+    void deleteEmployee(Long id);
 
 }
