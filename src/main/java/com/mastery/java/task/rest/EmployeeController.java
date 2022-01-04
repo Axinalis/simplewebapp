@@ -1,12 +1,13 @@
 package com.mastery.java.task.rest;
 
 import com.mastery.java.task.dto.EmployeeDto;
-import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.service.EmployeeService;
+import javax.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("employee")
@@ -29,12 +30,12 @@ public class EmployeeController {
     }
 
     @PostMapping()
-    public EmployeeDto createEmployee(@RequestBody EmployeeDto employee){
+    public EmployeeDto createEmployee(@RequestBody @Valid EmployeeDto employee){
         return employeeService.createEmployee(employee);
     }
 
     @PutMapping("{id}")
-    public EmployeeDto updateEmployee(@PathVariable Long id, @RequestBody EmployeeDto employee){
+    public EmployeeDto updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeDto employee){
         return employeeService.updateEmployee(id, employee);
     }
 

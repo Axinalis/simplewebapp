@@ -1,5 +1,7 @@
 package com.mastery.java.task.dto;
 
+import com.mastery.java.task.rest.Adult;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -12,6 +14,7 @@ public class EmployeeDto implements Serializable {
     private String secondName;
     private Long departmentId;
     private String jobTitle;
+    @Adult
     private LocalDate dateOfBirth;
 
     public EmployeeDto() {
