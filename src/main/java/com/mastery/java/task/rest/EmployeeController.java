@@ -1,6 +1,7 @@
 package com.mastery.java.task.rest;
 
-import com.mastery.java.task.dto.Employee;
+import com.mastery.java.task.dto.EmployeeDto;
+import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.service.EmployeeService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,22 +19,22 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public List<Employee> employeeList(@RequestParam Map<String, String> params) {
+    public List<EmployeeDto> employeeList(@RequestParam Map<String, String> params) {
         return employeeService.employeeList(params);
     }
 
     @GetMapping("{id}")
-    public Employee employeeById(@PathVariable Long id){
+    public EmployeeDto employeeById(@PathVariable Long id){
         return employeeService.employeeById(id);
     }
 
     @PostMapping()
-    public Employee createEmployee(@RequestBody Employee employee){
+    public EmployeeDto createEmployee(@RequestBody EmployeeDto employee){
         return employeeService.createEmployee(employee);
     }
 
     @PutMapping("{id}")
-    public Employee updateEmployee(@PathVariable Long id, @RequestBody Employee employee){
+    public EmployeeDto updateEmployee(@PathVariable Long id, @RequestBody EmployeeDto employee){
         return employeeService.updateEmployee(id, employee);
     }
 

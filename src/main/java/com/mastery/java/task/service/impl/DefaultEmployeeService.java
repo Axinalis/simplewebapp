@@ -1,14 +1,17 @@
 package com.mastery.java.task.service.impl;
 
-import com.mastery.java.task.dto.Employee;
+import com.mastery.java.task.dto.EmployeeDto;
+import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.exceptions.NotFoundException;
 import com.mastery.java.task.jpa.EmployeeRepository;
 import com.mastery.java.task.service.EmployeeService;
+import com.mastery.java.task.service.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class DefaultEmployeeService implements EmployeeService {
@@ -20,38 +23,41 @@ public class DefaultEmployeeService implements EmployeeService {
     }
 
     @Override
-    public List<Employee> employeeList(Map<String, String> params) {
+    public List<EmployeeDto> employeeList(Map<String, String> params) {
         if(params == null || params.get("firstName") == null || params.get("secondName") == null){
-            return repository.findAll();
+            return repository.findAll().stream().map(Mapper::mapToDto).collect(Collectors.toList());
         } else {
-            return repository.findByFirstNameAndSecondName(params.get("firstName"), params.get("secondName"));
+            return repository.findByFirstNameAndSecondName(params.get("firstName"), params.get("secondName"))
+                    .stream().map(Mapper::mapToDto).collect(Collectors.toList());
         }
     }
 
     @Override
-    public Employee employeeById(Long id) {
+    public EmployeeDto employeeById(Long id) {
         if(id == null){
             throw new NotFoundException("Id is null");
         }
-        return repository.findById(id).orElseThrow(NotFoundException::new);
+        return repository.findById(id).map(Mapper::mapToDto).orElseThrow(NotFoundException::new);
     }
 
     @Override
-    public Employee createEmployee(Employee employee) {
-        if(employee == null){
+    public EmployeeDto createEmployee(EmployeeDto employeeDto) {
+        if(employeeDto == null){
             throw new NotFoundException("Employee is null");
         }
-        employee.setEmployeeId(null);
-        return repository.saveAndFlush(employee);
+        employeeDto.setEmployeeId(null);
+        Employee employee = repository.saveAndFlush(Mapper.mapToEntity(employeeDto));
+        return Mapper.mapToDto(employee);
     }
 
     @Override
-    public Employee updateEmployee(Long id, Employee employee) {
-        if(id == null || employee == null){
+    public EmployeeDto updateEmployee(Long id, EmployeeDto employeeDto) {
+        if(id == null || employeeDto == null){
             throw new NotFoundException("Id or employee is null");
         }
-        employee.setEmployeeId(id);
-        return repository.saveAndFlush(employee);
+        employeeDto.setEmployeeId(id);
+        Employee employee = repository.saveAndFlush(Mapper.mapToEntity(employeeDto));
+        return Mapper.mapToDto(employee);
     }
 
     @Override

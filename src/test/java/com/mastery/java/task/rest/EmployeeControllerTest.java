@@ -1,6 +1,7 @@
 package com.mastery.java.task.rest;
 
-import com.mastery.java.task.dto.Employee;
+import com.mastery.java.task.dto.EmployeeDto;
+import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.dto.Gender;
 import com.mastery.java.task.service.impl.DefaultEmployeeService;
 import org.junit.Before;
@@ -21,32 +22,32 @@ public class EmployeeControllerTest {
     private EmployeeController controller;
     @Mock
     private DefaultEmployeeService service;
-    private List<Employee> list;
+    private List<EmployeeDto> list;
 
     @Before
     public void setup(){
         //For now there aren't much logic in this class and therefore no enough aspects to test
         service = mock(DefaultEmployeeService.class);
         list = new ArrayList<>();
-        Employee employee1 = new Employee(1L, "Anton", Gender.MALE);
+        EmployeeDto employee1 = new EmployeeDto(1L, "Anton", Gender.MALE);
         employee1.setDateOfBirth(LocalDate.of(2000, 5, 29));
         employee1.setSecondName("Trus");
         employee1.setJobTitle("Developer");
         employee1.setDepartmentId(5L);
         list.add(employee1);
-        Employee employee2 = new Employee(2L, "Nikolay", Gender.MALE);
+        EmployeeDto employee2 = new EmployeeDto(2L, "Nikolay", Gender.MALE);
         employee2.setDateOfBirth(LocalDate.of(1998, 8, 20));
         employee2.setSecondName("Golubov");
         employee2.setJobTitle("Project manager");
         employee2.setDepartmentId(3L);
         list.add(employee2);
-        Employee employee3 = new Employee(3L, "Andrey", Gender.MALE);
+        EmployeeDto employee3 = new EmployeeDto(3L, "Andrey", Gender.MALE);
         employee3.setDateOfBirth(LocalDate.of(1985, 1, 2));
         employee3.setSecondName("Shulgach");
         employee3.setJobTitle("Team lead");
         employee3.setDepartmentId(3L);
         list.add(employee3);
-        Employee employee4 = new Employee(4L, "Natalia", Gender.FEMALE);
+        EmployeeDto employee4 = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
         employee4.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee4.setSecondName("Mironova");
         employee4.setJobTitle("HR");
@@ -63,7 +64,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testEmployeeList(){
-        List<Employee> list = controller.employeeList(new HashMap<>());
+        List<EmployeeDto> list = controller.employeeList(new HashMap<>());
 
         assertNotNull(list);
         assertTrue(list.size() > 0);
@@ -75,7 +76,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testEmployeeById(){
-        Employee buf = controller.employeeById(1L);
+        EmployeeDto buf = controller.employeeById(1L);
 
         assertNotNull(buf);
         assertEquals("Anton", buf.getFirstName());
@@ -87,7 +88,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testCreateEmployee(){
-        Employee employee = new Employee(4L, "Natalia", Gender.FEMALE);
+        EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
         employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee.setSecondName("Mironova");
         employee.setJobTitle("HR");
@@ -99,7 +100,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testUpdateEmployee(){
-        Employee employee = new Employee(4L, "Natalia", Gender.FEMALE);
+        EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
         employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee.setSecondName("Mironova");
         employee.setJobTitle("HR");

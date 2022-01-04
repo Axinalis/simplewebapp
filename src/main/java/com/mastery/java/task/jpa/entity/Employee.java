@@ -1,4 +1,6 @@
-package com.mastery.java.task.dto;
+package com.mastery.java.task.jpa.entity;
+
+import com.mastery.java.task.dto.Gender;
 
 import javax.persistence.*;
 import java.time.LocalDate;

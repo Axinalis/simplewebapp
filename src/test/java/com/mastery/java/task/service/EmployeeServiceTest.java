@@ -1,6 +1,7 @@
 package com.mastery.java.task.service;
 
-import com.mastery.java.task.dto.Employee;
+import com.mastery.java.task.dto.EmployeeDto;
+import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.dto.Gender;
 import com.mastery.java.task.jpa.EmployeeRepository;
 import com.mastery.java.task.service.impl.DefaultEmployeeService;
@@ -69,7 +70,7 @@ public class EmployeeServiceTest {
 
     @Test
     public void testList(){
-        List<Employee> list = service.employeeList(new HashMap<>());
+        List<EmployeeDto> list = service.employeeList(new HashMap<>());
 
         assertNotNull(list);
         assertTrue(list.size() > 0);
@@ -81,7 +82,7 @@ public class EmployeeServiceTest {
 
     @Test
     public void testListWithNames(){
-        List<Employee> list = service.employeeList(params);
+        List<EmployeeDto> list = service.employeeList(params);
 
         assertNotNull(list);
         assertTrue(list.size() > 0);
@@ -93,7 +94,7 @@ public class EmployeeServiceTest {
 
     @Test
     public void testEmployeeById(){
-        Employee buf = service.employeeById(1L);
+        EmployeeDto buf = service.employeeById(1L);
 
         assertNotNull(buf);
         assertEquals("Anton", buf.getFirstName());
@@ -105,26 +106,61 @@ public class EmployeeServiceTest {
 
     @Test
     public void testCreateEmployee(){
-        Employee employee = new Employee(4L, "Natalia", Gender.FEMALE);
+        Long id = 4L;
+        EmployeeDto employeeDto = new EmployeeDto(id, "Natalia", Gender.FEMALE);
+        employeeDto.setDateOfBirth(LocalDate.of(1995, 4, 15));
+        employeeDto.setSecondName("Mironova");
+        employeeDto.setJobTitle("HR");
+        employeeDto.setDepartmentId(4L);
+
+        Employee employee = new Employee(null, "Natalia", Gender.FEMALE);
         employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee.setSecondName("Mironova");
         employee.setJobTitle("HR");
         employee.setDepartmentId(4L);
 
+        Employee createdEmployee = new Employee(id + 1, "Natalia", Gender.FEMALE);
+        createdEmployee.setDateOfBirth(LocalDate.of(1995, 4, 15));
+        createdEmployee.setSecondName("Mironova");
+        createdEmployee.setJobTitle("HR");
+        createdEmployee.setDepartmentId(4L);
+
+        when(repository.saveAndFlush(employee)).thenReturn(createdEmployee);
+
         //Test will pass if there will be no exception
-        service.createEmployee(employee);
+        EmployeeDto employeeDtoChanged = service.createEmployee(employeeDto);
+        assertEquals(employeeDtoChanged.getFirstName(), employeeDto.getFirstName());
+        assertEquals(employeeDtoChanged.getSecondName(), employeeDto.getSecondName());
+        assertEquals(employeeDtoChanged.getGender(), employeeDto.getGender());
+        assertEquals(employeeDtoChanged.getJobTitle(), employeeDto.getJobTitle());
+        assertNotEquals(employeeDtoChanged.getEmployeeId(), employeeDto.getEmployeeId());
+
     }
 
     @Test
     public void testUpdateEmployee(){
-        Employee employee = new Employee(4L, "Natalia", Gender.FEMALE);
+        Long id = 4L;
+        EmployeeDto employeeDto = new EmployeeDto(id, "Natalia", Gender.FEMALE);
+        employeeDto.setDateOfBirth(LocalDate.of(1995, 4, 15));
+        employeeDto.setSecondName("Mironova");
+        employeeDto.setJobTitle("HR");
+        employeeDto.setDepartmentId(4L);
+
+        Employee employee = new Employee(id, "Natalia", Gender.FEMALE);
         employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee.setSecondName("Mironova");
         employee.setJobTitle("HR");
         employee.setDepartmentId(4L);
 
+        when(repository.saveAndFlush(employee)).thenReturn(employee);
+
         //Test will pass if there will be no exception
-        service.updateEmployee(4L, employee);
+        EmployeeDto employeeDtoChanged = service.updateEmployee(id, employeeDto);
+        assertEquals(employeeDtoChanged.getFirstName(), employeeDto.getFirstName());
+        assertEquals(employeeDtoChanged.getSecondName(), employeeDto.getSecondName());
+        assertEquals(employeeDtoChanged.getGender(), employeeDto.getGender());
+        assertEquals(employeeDtoChanged.getJobTitle(), employeeDto.getJobTitle());
+        assertEquals(employeeDtoChanged.getEmployeeId(), employeeDto.getEmployeeId());
     }
 
     @Test
