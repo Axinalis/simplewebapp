@@ -26,44 +26,35 @@ public class EmployeeControllerTest {
 
     @Before
     public void setup(){
-        //For now there aren't much logic in this class and therefore no enough aspects to test
-        service = mock(DefaultEmployeeService.class);
         list = new ArrayList<>();
-        EmployeeDto employee1 = new EmployeeDto(1L, "Anton", Gender.MALE);
-        employee1.setDateOfBirth(LocalDate.of(2000, 5, 29));
-        employee1.setSecondName("Trus");
-        employee1.setJobTitle("Developer");
-        employee1.setDepartmentId(5L);
-        list.add(employee1);
-        EmployeeDto employee2 = new EmployeeDto(2L, "Nikolay", Gender.MALE);
-        employee2.setDateOfBirth(LocalDate.of(1998, 8, 20));
-        employee2.setSecondName("Golubov");
-        employee2.setJobTitle("Project manager");
-        employee2.setDepartmentId(3L);
-        list.add(employee2);
-        EmployeeDto employee3 = new EmployeeDto(3L, "Andrey", Gender.MALE);
-        employee3.setDateOfBirth(LocalDate.of(1985, 1, 2));
-        employee3.setSecondName("Shulgach");
-        employee3.setJobTitle("Team lead");
-        employee3.setDepartmentId(3L);
-        list.add(employee3);
-        EmployeeDto employee4 = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
-        employee4.setDateOfBirth(LocalDate.of(1995, 4, 15));
-        employee4.setSecondName("Mironova");
-        employee4.setJobTitle("HR");
-        employee4.setDepartmentId(4L);
-        list.add(employee4);
-        controller = new EmployeeController(service);
-        when(service.employeeList(new HashMap<>())).thenReturn(list);
-        when(service.employeeById(1L)).thenReturn(employee1);
-        when(service.employeeById(2L)).thenReturn(employee2);
-        when(service.employeeById(3L)).thenReturn(employee3);
-        when(service.employeeById(4L)).thenReturn(employee4);
+        String[] firstNames = {"Anton","Nikolay","Andrey","Natalia"};
+        String[] secondNames = {"Trus","Golubov","Shulgach","Mironova"};
+        String[] jobTitles = {"Developer","Project manager","Team lead","HR"};
+        Gender[] genders = {Gender.MALE, Gender.MALE, Gender.MALE, Gender.FEMALE};
+        LocalDate[] dates = {
+                LocalDate.of(2000, 5, 29),
+                LocalDate.of(1998, 8, 20),
+                LocalDate.of(1985, 1, 2),
+                LocalDate.of(1995, 4, 15)
+        };
+        Long[] departments = {5L, 3L, 3L, 4L};
 
+        for(int i = 0; i < 4; i++){
+            EmployeeDto employeeDto = new EmployeeDto((long)i + 1, firstNames[i], genders[i]);
+            employeeDto.setSecondName(secondNames[i]);
+            employeeDto.setDateOfBirth(dates[i]);
+            employeeDto.setJobTitle(jobTitles[i]);
+            employeeDto.setDepartmentId(departments[i]);
+            list.add(employeeDto);
+        }
+
+        service = mock(DefaultEmployeeService.class);
+        controller = new EmployeeController(service);
     }
 
     @Test
     public void testEmployeeList(){
+        when(service.employeeList(new HashMap<>())).thenReturn(list);
         List<EmployeeDto> list = controller.employeeList(new HashMap<>());
 
         assertNotNull(list);
@@ -76,6 +67,10 @@ public class EmployeeControllerTest {
 
     @Test
     public void testEmployeeById(){
+        when(service.employeeById(1L)).thenReturn(list.get(0));
+        when(service.employeeById(2L)).thenReturn(list.get(1));
+        when(service.employeeById(3L)).thenReturn(list.get(2));
+        when(service.employeeById(4L)).thenReturn(list.get(3));
         EmployeeDto buf = controller.employeeById(1L);
 
         assertNotNull(buf);

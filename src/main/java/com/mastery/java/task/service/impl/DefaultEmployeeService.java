@@ -5,7 +5,7 @@ import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.exceptions.NotFoundException;
 import com.mastery.java.task.jpa.EmployeeRepository;
 import com.mastery.java.task.service.EmployeeService;
-import com.mastery.java.task.service.Mapper;
+import com.mastery.java.task.service.EmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,10 +25,10 @@ public class DefaultEmployeeService implements EmployeeService {
     @Override
     public List<EmployeeDto> employeeList(Map<String, String> params) {
         if(params == null || params.get("firstName") == null || params.get("secondName") == null){
-            return repository.findAll().stream().map(Mapper::mapToDto).collect(Collectors.toList());
+            return repository.findAll().stream().map(EmployeeMapper::mapToDto).collect(Collectors.toList());
         } else {
             return repository.findByFirstNameAndSecondName(params.get("firstName"), params.get("secondName"))
-                    .stream().map(Mapper::mapToDto).collect(Collectors.toList());
+                    .stream().map(EmployeeMapper::mapToDto).collect(Collectors.toList());
         }
     }
 
@@ -37,7 +37,7 @@ public class DefaultEmployeeService implements EmployeeService {
         if(id == null){
             throw new NotFoundException("Id is null");
         }
-        return repository.findById(id).map(Mapper::mapToDto).orElseThrow(NotFoundException::new);
+        return repository.findById(id).map(EmployeeMapper::mapToDto).orElseThrow(NotFoundException::new);
     }
 
     @Override
@@ -46,8 +46,8 @@ public class DefaultEmployeeService implements EmployeeService {
             throw new NotFoundException("Employee is null");
         }
         employeeDto.setEmployeeId(null);
-        Employee employee = repository.saveAndFlush(Mapper.mapToEntity(employeeDto));
-        return Mapper.mapToDto(employee);
+        Employee employee = repository.save(EmployeeMapper.mapToEntity(employeeDto));
+        return EmployeeMapper.mapToDto(employee);
     }
 
     @Override
@@ -56,8 +56,8 @@ public class DefaultEmployeeService implements EmployeeService {
             throw new NotFoundException("Id or employee is null");
         }
         employeeDto.setEmployeeId(id);
-        Employee employee = repository.saveAndFlush(Mapper.mapToEntity(employeeDto));
-        return Mapper.mapToDto(employee);
+        Employee employee = repository.save(EmployeeMapper.mapToEntity(employeeDto));
+        return EmployeeMapper.mapToDto(employee);
     }
 
     @Override

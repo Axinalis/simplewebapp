@@ -3,7 +3,7 @@ package com.mastery.java.task.service;
 import com.mastery.java.task.dto.EmployeeDto;
 import com.mastery.java.task.jpa.entity.Employee;
 
-public class Mapper {
+public class EmployeeMapper {
 
     public static EmployeeDto mapToDto(Employee employee){
         EmployeeDto employeeDto = new EmployeeDto();
