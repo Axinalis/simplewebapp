@@ -1,13 +1,16 @@
 package com.mastery.java.task.exceptions;
 
-import org.springframework.http.HttpStatus;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExceptionMessage {
 
     private String message;
+    private Map<String, String> details;
     private String status;
 
     public ExceptionMessage(String message) {
+        this.details = new HashMap<>();
         this.message = message;
     }
 
@@ -25,5 +28,13 @@ public class ExceptionMessage {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Map<String, String> getDetails() {
+        return details;
+    }
+
+    public void setDetails(Map<String, String> details) {
+        this.details = details;
     }
 }

@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestControllerAdvice
 public class ErrorHandlingAdvice {
 
@@ -26,15 +23,15 @@ public class ErrorHandlingAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, String> handleValidationException(MethodArgumentNotValidException exception){
-        Map<String, String> errors = new HashMap<>();
+    public ExceptionMessage handleValidationException(MethodArgumentNotValidException exception){
+        ExceptionMessage message = new ExceptionMessage("Some of the fields are not valid");
         exception.getBindingResult().getAllErrors().forEach(error -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            message.getDetails().put(fieldName, errorMessage);
         });
-        errors.put("status", HttpStatus.BAD_REQUEST.toString());
-        return errors;
+        message.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return message;
     }
 
 }
