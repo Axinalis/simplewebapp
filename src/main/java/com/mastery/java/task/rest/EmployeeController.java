@@ -2,12 +2,11 @@ package com.mastery.java.task.rest;
 
 import com.mastery.java.task.dto.EmployeeDto;
 import com.mastery.java.task.service.EmployeeService;
-import javax.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("employee")

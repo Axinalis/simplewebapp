@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 public class ExceptionMessage {
 
     private String message;
-    private HttpStatus status;
+    private String status;
 
     public ExceptionMessage(String message) {
         this.message = message;
@@ -19,11 +19,11 @@ public class ExceptionMessage {
         this.message = message;
     }
 
-    public HttpStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(HttpStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }

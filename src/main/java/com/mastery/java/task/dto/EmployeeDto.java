@@ -2,6 +2,8 @@ package com.mastery.java.task.dto;
 
 import com.mastery.java.task.rest.Adult;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -9,11 +11,16 @@ import java.util.Objects;
 public class EmployeeDto implements Serializable {
 
     private Long employeeId;
+    @NotBlank
     private String firstName;
+    @NotNull
     private Gender gender;
     private String secondName;
+    @NotNull
     private Long departmentId;
+    @NotBlank
     private String jobTitle;
+    @NotNull
     @Adult
     private LocalDate dateOfBirth;
 
