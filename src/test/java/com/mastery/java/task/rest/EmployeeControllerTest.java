@@ -1,7 +1,6 @@
 package com.mastery.java.task.rest;
 
 import com.mastery.java.task.dto.EmployeeDto;
-import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.dto.Gender;
 import com.mastery.java.task.service.impl.DefaultEmployeeService;
 import org.junit.Before;
@@ -18,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class EmployeeControllerTest {
+
 
     private EmployeeController controller;
     @Mock
@@ -54,6 +54,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testEmployeeList(){
+
         when(service.employeeList(new HashMap<>())).thenReturn(list);
         List<EmployeeDto> list = controller.employeeList(new HashMap<>());
 
@@ -63,10 +64,12 @@ public class EmployeeControllerTest {
         assertTrue(list.stream().anyMatch(employee -> employee.getEmployeeId().equals(2L)));
         assertTrue(list.stream().anyMatch(employee -> employee.getEmployeeId().equals(3L)));
         assertTrue(list.stream().noneMatch(employee -> employee.getEmployeeId().equals(50L)));
+
     }
 
     @Test
     public void testEmployeeById(){
+
         when(service.employeeById(1L)).thenReturn(list.get(0));
         when(service.employeeById(2L)).thenReturn(list.get(1));
         when(service.employeeById(3L)).thenReturn(list.get(2));
@@ -83,6 +86,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testCreateEmployee(){
+
         EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
         employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee.setSecondName("Mironova");
@@ -95,6 +99,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testUpdateEmployee(){
+
         EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
         employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee.setSecondName("Mironova");
@@ -103,6 +108,7 @@ public class EmployeeControllerTest {
 
         //Test will pass if there will be no exception
         controller.updateEmployee(4L, employee);
+
     }
 
     @Test
