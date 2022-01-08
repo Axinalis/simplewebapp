@@ -1,4 +1,4 @@
-package com.mastery.java.task.rest;
+package com.mastery.java.task.validator;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

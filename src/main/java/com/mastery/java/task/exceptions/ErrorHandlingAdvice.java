@@ -1,6 +1,8 @@
 package com.mastery.java.task.exceptions;
 
+import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,13 +12,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorHandlingAdvice {
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(EmployeeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ExceptionMessage handleNotFoundException(NotFoundException exception) {
-        ExceptionMessage message = new ExceptionMessage(exception.getMessage());
-        if(exception.getMessage() == null){
-            message.setMessage("Resource wasn't found");
-        }
+    public ExceptionMessage handleEmployeeNotFoundException(EmployeeNotFoundException exception) {
+        ExceptionMessage message = new ExceptionMessage("Employee not found");
+        message.getDetails().put("exception", exception.getMessage());
         message.setStatus(HttpStatus.NOT_FOUND.toString());
         return message;
     }
@@ -31,6 +31,24 @@ public class ErrorHandlingAdvice {
             message.getDetails().put(fieldName, errorMessage);
         });
         message.setStatus(HttpStatus.BAD_REQUEST.toString());
+        return message;
+    }
+
+    @ExceptionHandler(PSQLException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionMessage handleDatabaseException(PSQLException exception){
+        ExceptionMessage message = new ExceptionMessage("Some error with database occurred");
+        message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        return message;
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ExceptionMessage handleRuntimeException(RuntimeException exception){
+        ExceptionMessage message = new ExceptionMessage("Some internal error occurred");
+        message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        //For now, until there is no loggers in project
+        message.getDetails().put("Type of exception", exception.getClass().getName());
         return message;
     }
 

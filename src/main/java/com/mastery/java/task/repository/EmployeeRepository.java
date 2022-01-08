@@ -1,6 +1,6 @@
-package com.mastery.java.task.jpa;
+package com.mastery.java.task.repository;
 
-import com.mastery.java.task.jpa.entity.Employee;
+import com.mastery.java.task.entity.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

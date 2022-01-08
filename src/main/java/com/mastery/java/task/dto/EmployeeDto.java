@@ -1,6 +1,7 @@
 package com.mastery.java.task.dto;
 
-import com.mastery.java.task.rest.Adult;
+import com.mastery.java.task.validator.Adult;
+import com.mastery.java.task.validator.IsGender;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,8 +14,8 @@ public class EmployeeDto implements Serializable {
     private Long employeeId;
     @NotBlank
     private String firstName;
-    @NotNull
-    private Gender gender;
+    @IsGender
+    private String gender;
     private String secondName;
     @NotNull
     private Long departmentId;
@@ -27,7 +28,7 @@ public class EmployeeDto implements Serializable {
     public EmployeeDto() {
     }
 
-    public EmployeeDto(Long employeeId, String firstName, Gender gender) {
+    public EmployeeDto(Long employeeId, String firstName, String gender) {
         this.employeeId = employeeId;
         this.firstName = firstName;
         this.gender = gender;
@@ -45,7 +46,7 @@ public class EmployeeDto implements Serializable {
         return firstName;
     }
 
-    public Gender getGender() {
+    public String getGender() {
         return gender;
     }
 
@@ -53,7 +54,7 @@ public class EmployeeDto implements Serializable {
         this.firstName = firstName;
     }
 
-    public void setGender(Gender gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 

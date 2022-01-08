@@ -1,7 +1,7 @@
-package com.mastery.java.task.rest;
+package com.mastery.java.task.validator;
 
 import javax.validation.Constraint;
-import org.jvnet.staxex.StAxSOAPBody;
+import javax.validation.Payload;
 
 import java.lang.annotation.*;
 
@@ -12,5 +12,5 @@ import java.lang.annotation.*;
 public @interface Adult {
     String message() default "Person is not an adult";
     Class<?>[] groups() default { };
-    Class<? extends StAxSOAPBody.Payload>[] payload() default { };
+    Class<? extends Payload>[] payload() default { };
 }
