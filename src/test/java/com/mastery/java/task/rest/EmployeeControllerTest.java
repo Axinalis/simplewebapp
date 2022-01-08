@@ -1,119 +1,163 @@
 package com.mastery.java.task.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mastery.java.task.dto.EmployeeDto;
 import com.mastery.java.task.dto.Gender;
-import com.mastery.java.task.service.impl.DefaultEmployeeService;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+//This test has a lot of pre-defined IDs, it will be fixed in future
+@SpringBootTest
+@AutoConfigureMockMvc
 public class EmployeeControllerTest {
 
+    @Autowired
+    private MockMvc mockMvc;
 
-    private EmployeeController controller;
-    @Mock
-    private DefaultEmployeeService service;
-    private List<EmployeeDto> list;
+    private static ObjectMapper mapper;
+    private static EmployeeDto egorPomidorov;
 
-    @Before
-    public void setup(){
-        list = new ArrayList<>();
-        String[] firstNames = {"Anton","Nikolay","Andrey","Natalia"};
-        String[] secondNames = {"Trus","Golubov","Shulgach","Mironova"};
-        String[] jobTitles = {"Developer","Project manager","Team lead","HR"};
-        Gender[] genders = {Gender.MALE, Gender.MALE, Gender.MALE, Gender.FEMALE};
-        LocalDate[] dates = {
-                LocalDate.of(2000, 5, 29),
-                LocalDate.of(1998, 8, 20),
-                LocalDate.of(1985, 1, 2),
-                LocalDate.of(1995, 4, 15)
-        };
-        Long[] departments = {5L, 3L, 3L, 4L};
+    @BeforeAll
+    public static void setup(){
+        mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        egorPomidorov = new EmployeeDto(1L, "Egor", Gender.MALE);
+        egorPomidorov.setDepartmentId(1L);
+        egorPomidorov.setJobTitle("Not a worker");
+        egorPomidorov.setSecondName("Pomidorov");
+        egorPomidorov.setDateOfBirth(LocalDate.of(2001, 5, 6));
 
-        for(int i = 0; i < 4; i++){
-            EmployeeDto employeeDto = new EmployeeDto((long)i + 1, firstNames[i], genders[i]);
-            employeeDto.setSecondName(secondNames[i]);
-            employeeDto.setDateOfBirth(dates[i]);
-            employeeDto.setJobTitle(jobTitles[i]);
-            employeeDto.setDepartmentId(departments[i]);
-            list.add(employeeDto);
+    }
+
+    private String mapToJson(Object object){
+        try {
+            return mapper.writeValueAsString(object);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
+        return "";
+    }
 
-        service = mock(DefaultEmployeeService.class);
-        controller = new EmployeeController(service);
+    private <T> T mapFromJson(String json, TypeReference<T> reference){
+        try{
+            return mapper.readValue(json, reference);
+        } catch (JsonProcessingException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Test
-    public void testEmployeeList(){
+    public void getListsWithAndWithoutNames() throws Exception {
+        //Check get method with path "/employee"
+        MvcResult result = mockMvc.perform(get("/employee"))
+                .andExpect(status().isOk()).andReturn();
 
-        when(service.employeeList(new HashMap<>())).thenReturn(list);
-        List<EmployeeDto> list = controller.employeeList(new HashMap<>());
+        String responseBody = result.getResponse().getContentAsString();
+        List<EmployeeDto> strList = mapFromJson(responseBody, new TypeReference<List<EmployeeDto>>(){});
+        Assertions.assertThat(strList.size()).isPositive();
+        EmployeeDto employee = strList.stream().findAny().get();
+        Assertions.assertThat(employee).isNotNull();
+        Assertions.assertThat(employee.getFirstName()).isNotBlank();
 
-        assertNotNull(list);
-        assertTrue(list.size() > 0);
-        assertTrue(list.stream().anyMatch(employee -> employee.getEmployeeId().equals(1L)));
-        assertTrue(list.stream().anyMatch(employee -> employee.getEmployeeId().equals(2L)));
-        assertTrue(list.stream().anyMatch(employee -> employee.getEmployeeId().equals(3L)));
-        assertTrue(list.stream().noneMatch(employee -> employee.getEmployeeId().equals(50L)));
-
+        //Check get method with path "/employee" and with names parameters
+        result = mockMvc.perform(get("/employee?firstName=Egor&secondName=Pomidorov"))
+                .andExpect(status().isOk()).andReturn();
+        responseBody = result.getResponse().getContentAsString();
+        strList = mapFromJson(responseBody, new TypeReference<List<EmployeeDto>>(){});
+        Assertions.assertThat(strList.size()).isPositive();
+        employee = strList.stream().findAny().get();
+        Assertions.assertThat(employee).isNotNull();
+        Assertions.assertThat(employee.getFirstName()).isEqualTo("Egor");
+        Assertions.assertThat(employee.getSecondName()).isEqualTo("Pomidorov");
     }
 
     @Test
-    public void testEmployeeById(){
+    public void testSpecificEmployees() throws Exception {
+        Long id = 44L;
+        Long nonExistentId = 1000L;
+        //Check get method with path "/employee/{id}", where id exists
+        MvcResult result = mockMvc.perform(get("/employee/" + id))
+                .andExpect(status().isOk()).andReturn();
 
-        when(service.employeeById(1L)).thenReturn(list.get(0));
-        when(service.employeeById(2L)).thenReturn(list.get(1));
-        when(service.employeeById(3L)).thenReturn(list.get(2));
-        when(service.employeeById(4L)).thenReturn(list.get(3));
-        EmployeeDto buf = controller.employeeById(1L);
+        EmployeeDto employee = mapFromJson(result.getResponse().getContentAsString(), new TypeReference<EmployeeDto>() {});
 
-        assertNotNull(buf);
-        assertEquals("Anton", buf.getFirstName());
-        assertEquals("Trus", buf.getSecondName());
-        assertEquals("Developer", buf.getJobTitle());
-        assertEquals(Gender.MALE, buf.getGender());
-        assertEquals(5L, (long) buf.getDepartmentId());
+        Assertions.assertThat(employee).isNotNull();
+        Assertions.assertThat(employee.getEmployeeId()).isEqualTo(id);
+        Assertions.assertThat(employee.getFirstName()).isNotNull();
+        Assertions.assertThat(employee.getSecondName()).isNotNull();
+        Assertions.assertThat(employee.getJobTitle()).isNotNull();
+        Assertions.assertThat(employee.getDepartmentId()).isNotNull();
+        Assertions.assertThat(employee.getDateOfBirth()).isNotNull();
+        Assertions.assertThat(employee.getGender()).isNotNull();
+
+        //Check get method with path "/employee/{id}", where id doesn't exist
+        result = mockMvc.perform(get("/employee/" + nonExistentId))
+                .andExpect(status().isNotFound()).andReturn();
     }
 
     @Test
-    public void testCreateEmployee(){
+    public void testCreate() throws Exception {
+        String jsonEmployee = mapToJson(egorPomidorov);
 
-        EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
-        employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
-        employee.setSecondName("Mironova");
-        employee.setJobTitle("HR");
-        employee.setDepartmentId(4L);
+        MvcResult result = mockMvc.perform(post("/employee").contentType("application/json").content(jsonEmployee))
+                .andExpect(status().isOk()).andReturn();
 
-        //Test will pass if there will be no exception
-        controller.createEmployee(employee);
+        EmployeeDto returnedEmployee = mapFromJson(result.getResponse().getContentAsString(), new TypeReference<EmployeeDto>() {});
+        egorPomidorov.setEmployeeId(returnedEmployee.getEmployeeId());
+        Assertions.assertThat(egorPomidorov).isEqualTo(returnedEmployee);
     }
 
     @Test
-    public void testUpdateEmployee(){
+    public void testUpdate() throws Exception {
+        Long originId = egorPomidorov.getEmployeeId();
+        String jsonEmployee = mapToJson(egorPomidorov);
+        Long id = 30L;
+        Long nonExistentId = 1000L;
 
-        EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
-        employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
-        employee.setSecondName("Mironova");
-        employee.setJobTitle("HR");
-        employee.setDepartmentId(4L);
+        MvcResult result = mockMvc.perform(put("/employee/" + id).contentType("application/json").content(jsonEmployee))
+                .andExpect(status().isOk()).andReturn();
 
-        //Test will pass if there will be no exception
-        controller.updateEmployee(4L, employee);
-
+        EmployeeDto returnedEmployee = mapFromJson(result.getResponse().getContentAsString(), new TypeReference<EmployeeDto>() {});
+        egorPomidorov.setEmployeeId(id);
+        Assertions.assertThat(egorPomidorov).isEqualTo(returnedEmployee);
+        egorPomidorov.setEmployeeId(originId);
     }
 
     @Test
-    public void testDeleteEmployee(){
-        controller.deleteEmployee(4L);
-    }
+    public void testDelete() throws Exception {
+        //Creating new employee to delete it afterwards
 
+        String jsonEmployee = mapToJson(egorPomidorov);
+        MvcResult result = mockMvc.perform(post("/employee").contentType("application/json").content(jsonEmployee))
+                .andExpect(status().isOk()).andReturn();
+
+        EmployeeDto returnedEmployee = mapFromJson(result.getResponse().getContentAsString(), new TypeReference<EmployeeDto>() {});
+        Long id = returnedEmployee.getEmployeeId();
+        Assertions.assertThat(id).isNotNull();
+
+        //Deleting
+        mockMvc.perform(delete("/employee/" + id)).andExpect(status().isOk());
+
+        Assertions.assertThat(mockMvc.perform(get("/employee/" + id))
+                .andReturn()
+                .getResponse()
+                .getStatus())
+                .isEqualTo(404);
+    }
 }

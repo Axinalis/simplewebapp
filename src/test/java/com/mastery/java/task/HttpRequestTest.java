@@ -1,4 +1,4 @@
-package com.mastery.java.task.rest;
+package com.mastery.java.task;
 
 import com.mastery.java.task.dto.EmployeeDto;
 import com.mastery.java.task.dto.Gender;
@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+//Not working yet
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class HttpRequestTest {
 
@@ -23,6 +24,8 @@ public class HttpRequestTest {
     @Autowired
     private TestRestTemplate template;
 
+    private EmployeeDto employeeDto;
+
     @Test
     public void testAvailability() {
         Assertions.assertThat(template.getForObject("http://localhost:" + port + "/simplewebapp", String.class)).isNotNull();
@@ -31,27 +34,38 @@ public class HttpRequestTest {
     }
 
     @Test
-    public void testCreateUpdateDelete(){
+    public void testCreate(){
         EmployeeDto employeeDto = new EmployeeDto(1L, "Egor", Gender.MALE);
         employeeDto.setDepartmentId(1L);
         employeeDto.setJobTitle("Not a worker");
         employeeDto.setSecondName("Pomidorov");
         employeeDto.setDateOfBirth(LocalDate.of(2001, 5, 6));
 
-        //Create
         EmployeeDto responseEmployeeDto = template.postForObject("http://localhost:" + port + "/simplewebapp/employee",
                 employeeDto, EmployeeDto.class);
         Long newId = responseEmployeeDto.getEmployeeId();
         employeeDto.setEmployeeId(newId);
         Assertions.assertThat(responseEmployeeDto).isEqualTo(employeeDto);
+    }
 
-        //Update
+    @Test
+    public void testUpdate(){
+        EmployeeDto employeeDto = new EmployeeDto(1L, "Egor", Gender.MALE);
+        employeeDto.setDepartmentId(1L);
+        employeeDto.setJobTitle("Not a worker");
+        employeeDto.setSecondName("Pomidorov");
+        employeeDto.setDateOfBirth(LocalDate.of(2001, 5, 6));
+
+        Long newId = 1L;
         employeeDto.setSecondName("Tomato");
         template.put("http://localhost:" + port + "/simplewebapp/employee/" + newId, employeeDto);
-        responseEmployeeDto = template.getForObject("http://localhost:" + port + "/simplewebapp/employee/" + newId, EmployeeDto.class);
+        EmployeeDto responseEmployeeDto = template.getForObject("http://localhost:" + port + "/simplewebapp/employee/" + newId, EmployeeDto.class);
         Assertions.assertThat(responseEmployeeDto.getSecondName()).isEqualTo("Tomato");
+    }
 
-        //Delete
+    @Test
+    public void testDelete(){
+        Long newId = 1L;
         template.delete("http://localhost:" + port + "/simplewebapp/employee/" + newId);
         Assertions.assertThat(template.getForObject("http://localhost:" + port + "/simplewebapp/employee/" + newId, String.class)).contains("404");
     }
