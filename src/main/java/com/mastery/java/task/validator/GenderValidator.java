@@ -11,6 +11,6 @@ public class GenderValidator implements ConstraintValidator<IsGender, String> {
     @Override
     public boolean isValid(String gender, ConstraintValidatorContext constraintValidatorContext) {
         return Arrays.stream(Gender.values())
-                .anyMatch(enumGender -> enumGender.toString().equals(gender));
+                .anyMatch(enumGender -> enumGender.name().equalsIgnoreCase(gender));
     }
 }
