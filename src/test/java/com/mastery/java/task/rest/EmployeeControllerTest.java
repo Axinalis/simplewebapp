@@ -52,10 +52,12 @@ public class EmployeeControllerTest {
         mapper.registerModule(new JavaTimeModule());
 
         list = new ArrayList<>();
+        String male = Gender.MALE.toString();
+        String female = Gender.FEMALE.toString();
         String[] firstNames = {"Anton", "Nikolay", "Andrey", "Natalia", "Egor"};
         String[] secondNames = {"Trus", "Golubov", "Shulgach", "Mironova", "Pomidorov"};
         String[] jobTitles = {"Developer", "Project manager", "Team lead", "HR", "Business analyst"};
-        Gender[] genders = {Gender.MALE, Gender.MALE, Gender.MALE, Gender.FEMALE, Gender.MALE};
+        String[] genders = {male, male, male, female, male};
         LocalDate[] dates = {
                 LocalDate.of(2000, 5, 29),
                 LocalDate.of(1998, 8, 20),
@@ -135,7 +137,7 @@ public class EmployeeControllerTest {
         Long id = actualEmployee.getEmployeeId();
         when(service.employeeById(id)).thenReturn(actualEmployee);
         when(service.employeeById(nonExistentId)).thenThrow(new NotFoundException());
-        
+
         //Check get method with path "/employee/{id}", where id exists
         MvcResult result = mockMvc.perform(get("/employee/" + id))
                 .andExpect(status().isOk()).andReturn();

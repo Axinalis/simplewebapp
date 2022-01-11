@@ -1,9 +1,9 @@
 package com.mastery.java.task.service.impl;
 
 import com.mastery.java.task.dto.EmployeeDto;
-import com.mastery.java.task.jpa.entity.Employee;
-import com.mastery.java.task.exceptions.NotFoundException;
-import com.mastery.java.task.jpa.EmployeeRepository;
+import com.mastery.java.task.entity.Employee;
+import com.mastery.java.task.exceptions.EmployeeNotFoundException;
+import com.mastery.java.task.repository.EmployeeRepository;
 import com.mastery.java.task.service.EmployeeService;
 import com.mastery.java.task.service.EmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +35,15 @@ public class DefaultEmployeeService implements EmployeeService {
     @Override
     public EmployeeDto employeeById(Long id) {
         if(id == null){
-            throw new NotFoundException("Id is null");
+            throw new EmployeeNotFoundException("Id is null");
         }
-        return repository.findById(id).map(EmployeeMapper::mapToDto).orElseThrow(NotFoundException::new);
+        return repository.findById(id).map(EmployeeMapper::mapToDto).orElseThrow(EmployeeNotFoundException::new);
     }
 
     @Override
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
         if(employeeDto == null){
-            throw new NotFoundException("Employee is null");
+            throw new EmployeeNotFoundException("Employee is null");
         }
         employeeDto.setEmployeeId(null);
         Employee employee = repository.save(EmployeeMapper.mapToEntity(employeeDto));
@@ -53,7 +53,7 @@ public class DefaultEmployeeService implements EmployeeService {
     @Override
     public EmployeeDto updateEmployee(Long id, EmployeeDto employeeDto) {
         if(id == null || employeeDto == null){
-            throw new NotFoundException("Id or employee is null");
+            throw new EmployeeNotFoundException("Id or employee is null");
         }
         employeeDto.setEmployeeId(id);
         Employee employee = repository.save(EmployeeMapper.mapToEntity(employeeDto));
@@ -63,7 +63,7 @@ public class DefaultEmployeeService implements EmployeeService {
     @Override
     public void deleteEmployee(Long id) {
         if(id == null){
-            throw new NotFoundException("Id is null");
+            throw new EmployeeNotFoundException("Id is null");
         }
         repository.deleteById(id);
     }
