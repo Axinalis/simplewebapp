@@ -1,9 +1,9 @@
 package com.mastery.java.task.service;
 
 import com.mastery.java.task.dto.EmployeeDto;
-import com.mastery.java.task.jpa.entity.Employee;
+import com.mastery.java.task.entity.Employee;
 import com.mastery.java.task.dto.Gender;
-import com.mastery.java.task.jpa.EmployeeRepository;
+import com.mastery.java.task.repository.EmployeeRepository;
 import com.mastery.java.task.service.impl.DefaultEmployeeService;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,7 +102,7 @@ public class EmployeeServiceTest {
     @Test
     public void testCreateEmployee(){
         Long id = 4L;
-        EmployeeDto employeeDto = new EmployeeDto(id, "Natalia", Gender.FEMALE);
+        EmployeeDto employeeDto = new EmployeeDto(id, "Natalia", Gender.FEMALE.toString());
         employeeDto.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employeeDto.setSecondName("Mironova");
         employeeDto.setJobTitle("HR");
@@ -135,7 +135,7 @@ public class EmployeeServiceTest {
     @Test
     public void testUpdateEmployee(){
         Long id = 4L;
-        EmployeeDto employeeDto = new EmployeeDto(id, "Natalia", Gender.FEMALE);
+        EmployeeDto employeeDto = new EmployeeDto(id, "Natalia", Gender.FEMALE.toString());
         employeeDto.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employeeDto.setSecondName("Mironova");
         employeeDto.setJobTitle("HR");

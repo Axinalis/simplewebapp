@@ -1,7 +1,6 @@
 package com.mastery.java.task.rest;
 
 import com.mastery.java.task.dto.EmployeeDto;
-import com.mastery.java.task.jpa.entity.Employee;
 import com.mastery.java.task.dto.Gender;
 import com.mastery.java.task.service.impl.DefaultEmployeeService;
 import org.junit.Before;
@@ -27,10 +26,12 @@ public class EmployeeControllerTest {
     @Before
     public void setup(){
         list = new ArrayList<>();
+        String male = Gender.MALE.toString();
+        String female = Gender.FEMALE.toString();
         String[] firstNames = {"Anton","Nikolay","Andrey","Natalia"};
         String[] secondNames = {"Trus","Golubov","Shulgach","Mironova"};
         String[] jobTitles = {"Developer","Project manager","Team lead","HR"};
-        Gender[] genders = {Gender.MALE, Gender.MALE, Gender.MALE, Gender.FEMALE};
+        String[] genders = {male, male, male, female};
         LocalDate[] dates = {
                 LocalDate.of(2000, 5, 29),
                 LocalDate.of(1998, 8, 20),
@@ -83,7 +84,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testCreateEmployee(){
-        EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
+        EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE.toString());
         employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee.setSecondName("Mironova");
         employee.setJobTitle("HR");
@@ -95,7 +96,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testUpdateEmployee(){
-        EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE);
+        EmployeeDto employee = new EmployeeDto(4L, "Natalia", Gender.FEMALE.toString());
         employee.setDateOfBirth(LocalDate.of(1995, 4, 15));
         employee.setSecondName("Mironova");
         employee.setJobTitle("HR");

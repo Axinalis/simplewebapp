@@ -1,4 +1,4 @@
-package com.mastery.java.task.jpa.entity;
+package com.mastery.java.task.entity;
 
 import com.mastery.java.task.dto.Gender;
 

@@ -1,7 +1,8 @@
 package com.mastery.java.task.service;
 
 import com.mastery.java.task.dto.EmployeeDto;
-import com.mastery.java.task.jpa.entity.Employee;
+import com.mastery.java.task.dto.Gender;
+import com.mastery.java.task.entity.Employee;
 
 public class EmployeeMapper {
 
@@ -10,7 +11,7 @@ public class EmployeeMapper {
         employeeDto.setEmployeeId(employee.getEmployeeId());
         employeeDto.setFirstName(employee.getFirstName());
         employeeDto.setSecondName(employee.getSecondName());
-        employeeDto.setGender(employee.getGender());
+        employeeDto.setGender(employee.getGender().toString());
         employeeDto.setDateOfBirth(employee.getDateOfBirth());
         employeeDto.setDepartmentId(employee.getDepartmentId());
         employeeDto.setJobTitle(employee.getJobTitle());
@@ -22,7 +23,7 @@ public class EmployeeMapper {
         employee.setEmployeeId(employeeDto.getEmployeeId());
         employee.setFirstName(employeeDto.getFirstName());
         employee.setSecondName(employeeDto.getSecondName());
-        employee.setGender(employeeDto.getGender());
+        employee.setGender(Gender.valueOf(employeeDto.getGender()));
         employee.setDateOfBirth(employeeDto.getDateOfBirth());
         employee.setDepartmentId(employeeDto.getDepartmentId());
         employee.setJobTitle(employeeDto.getJobTitle());
