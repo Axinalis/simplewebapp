@@ -2,6 +2,7 @@ package com.mastery.java.task.rest;
 
 import com.mastery.java.task.dto.EmployeeDto;
 import com.mastery.java.task.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -14,7 +15,7 @@ public class EmployeeController {
 
     private EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(@Autowired EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 

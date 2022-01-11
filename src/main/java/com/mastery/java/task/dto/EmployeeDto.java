@@ -101,7 +101,7 @@ public class EmployeeDto implements Serializable {
         EmployeeDto employee = (EmployeeDto) o;
         return Objects.equals(employeeId, employee.employeeId)
                 && Objects.equals(firstName, employee.firstName)
-                && gender == employee.gender
+                && Objects.equals(gender, employee.gender)
                 && Objects.equals(secondName, employee.secondName)
                 && Objects.equals(departmentId, employee.departmentId)
                 && Objects.equals(jobTitle, employee.jobTitle)
