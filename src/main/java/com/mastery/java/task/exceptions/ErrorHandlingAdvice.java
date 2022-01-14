@@ -2,12 +2,12 @@ package com.mastery.java.task.exceptions;
 
 import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class ErrorHandlingAdvice {
@@ -18,6 +18,15 @@ public class ErrorHandlingAdvice {
         ExceptionMessage message = new ExceptionMessage("Employee not found");
         message.getDetails().put("exception", exception.getMessage());
         message.setStatus(HttpStatus.NOT_FOUND.toString());
+        return message;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionMessage handlePathVariableException(MethodArgumentTypeMismatchException exception){
+        ExceptionMessage message = new ExceptionMessage("Path variables of searched resource are not valid");
+        message.setStatus(HttpStatus.BAD_REQUEST.toString());
+        message.getDetails().put(exception.getName(), exception.getMessage());
         return message;
     }
 
