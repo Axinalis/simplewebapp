@@ -15,12 +15,10 @@ import java.util.Map;
 public class EmployeeController {
 
     private EmployeeService employeeService;
-    private Logger log;
+    private static Logger log = LogManager.getLogger("com.mastery.java.task");
 
     public EmployeeController(EmployeeService employeeService) {
-        this.log = LogManager.getLogger(this.getClass().getName());
         this.employeeService = employeeService;
-        log.info("Employee controller has been instantiated");
     }
 
     @GetMapping

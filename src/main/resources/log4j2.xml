@@ -12,7 +12,7 @@
         <Root level="debug">
             <AppenderRef ref="ConsoleAppender" />
         </Root>
-        <Logger name="com.mastery.java.task.rest.EmployeeController" level="info">
+        <Logger name="com.mastery.java.task" level="info">
             <AppenderRef ref="FileAppender"/>
         </Logger>
     </Loggers>
