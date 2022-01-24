@@ -9,7 +9,7 @@
         </File>
     </Appenders>
     <Loggers>
-        <Root level="debug">
+        <Root level="info">
             <AppenderRef ref="ConsoleAppender" />
         </Root>
         <Logger name="com.mastery.java.task" level="info">

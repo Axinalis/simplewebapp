@@ -1,0 +1,205 @@
+swagger: "2.0"
+info:
+  title: "Simple webapp"
+  description: "Just a simple webapp. Allows to work with employee data. \nWritten using Spring boot and postgreSQL."
+  version: "1.0.0"
+  termsOfService: ""
+  contact:
+    email: "antontrus@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+# host: "localhost:8080"
+# basePath: "/simplewebapp"
+tags:
+  - name: "employee"
+    description: "CRUD operations with employees"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /employee:
+    get:
+      tags:
+        - "employee"
+      summary: "Get list of all employees"
+      description: ""
+      operationId: "employeeList"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "List of employees returned"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Employee"
+        "500":
+          description: "Som internal error occured"
+          schema:
+            $ref: "#/definitions/exceptionMessage"
+    post:
+      tags:
+        - "employee"
+      summary: "Create new employee"
+      description: ""
+      operationId: "createEmployee"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Employee to be created"
+          required: true
+          schema:
+            $ref: "#/definitions/Employee"
+      responses:
+        "200":
+          description: "Employee successfully created"
+          schema:
+            $ref: "#/definitions/Employee"
+        "400":
+          description: "Employee parameters not valid"
+          schema:
+            $ref: "#/definitions/exceptionMessage"
+        "500":
+          description: "Some internal error occured"
+          schema:
+            $ref: "#/definitions/exceptionMessage"
+  /employee/{id}:
+    get:
+      tags:
+        - "employee"
+      summary: "Find particular employee"
+      description: "Returns employee corresponding to the id"
+      operationId: "employeeById"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of needed employee"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: "Employee is found"
+          schema:
+            $ref: "#/definitions/Employee"
+        "400":
+          description: "Invalid path variable"
+          schema:
+            $ref: "#/definitions/exceptionMessage"
+        "404":
+          description: "Employee with current id is not found"
+          schema:
+            $ref: "#/definitions/exceptionMessage"
+    put:
+      tags:
+        - "employee"
+      summary: "Update existing employee"
+      description: ""
+      operationId: "updateEmployee"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of employee to be updated"
+          required: true
+          type: "integer"
+        - name: "body"
+          in: "body"
+          description: "Employee to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/Employee"
+      responses:
+        "200":
+          description: "Employee successfully updated"
+          schema:
+            $ref: "#/definitions/Employee"
+        "400":
+          description: "Employee parameters not valid"
+          schema:
+            $ref: "#/definitions/exceptionMessage"
+        "500":
+          description: "Some internal error occured"
+          schema:
+            $ref: "#/definitions/exceptionMessage"
+    delete:
+      tags:
+        - "employee"
+      summary: "Delete existing employee"
+      description: "Deletes employee with particular id"
+      operationId: "deleteEmployee"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Id of needed employee"
+          required: true
+          type: "integer"
+          format: "int64"
+      responses:
+        "200":
+          description: "Employee successfully deleted"
+        "400":
+          description: "Employee id is not valid"
+          schema:
+            $ref: "#/definitions/exceptionMessage"
+
+definitions:
+  Employee:
+    type: "object"
+    required:
+      - "firstName"
+      - "gender"
+      - "departmentId"
+      - "jobTitle"
+      - "dateOfBirth"
+    properties:
+      firstName:
+        type: "string"
+      secondName:
+        type: "string"
+      employeeId:
+        type: "integer"
+        format: "int64"
+      gender:
+        type: "string"
+        description: "male or female"
+        enum:
+          - "male"
+          - "female"
+      departmentId:
+        type: "integer"
+        format: "int64"
+      jobTitle:
+        type: "string"
+      dateOfBirth:
+        type: "string"
+        format: "date"
+  exceptionMessage:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+      details:
+        type: "array"
+        items:
+          type: "string"
+      status:
+        type: "string"
+externalDocs:
+  description: "There'snothing more to know about this app"
+  url: "http://swagger.io"
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /Axinalis/MyFirstPetAPI/1.0.0
