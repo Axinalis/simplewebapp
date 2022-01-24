@@ -3,24 +3,21 @@ package com.mastery.java.task.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mastery.java.task.dto.EmployeeDto;
-import com.mastery.java.task.dto.Gender;
 import com.mastery.java.task.exceptions.EmployeeNotFoundException;
 import com.mastery.java.task.repository.EmployeeRepository;
 import com.mastery.java.task.service.EmployeeService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.verify;
@@ -29,66 +26,22 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
-@AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
+@WebMvcTest(EmployeeController.class)
 public class EmployeeControllerTest {
 
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper mapper;
     @MockBean
     private EmployeeService service;
     @MockBean
     private EmployeeRepository repository;
-    @Autowired
-    private MockMvc mockMvc;
-
-    private ObjectMapper mapper;
-    private List<EmployeeDto> list;
-    //Indexes for list. Shows what element every method should work with
-    private int forNameSearch = 0;
-    private int forIdSearch = 1;
-    private int forCreating = 2;
-    private int forUpdating = 3;
-    private int forDeleting = 4;
-    private int forCreateValidation = 5;
-    private int forUpdateValidation = 6;
-    private Long nonExistentId = 100L;
-
-    @BeforeEach
-    public void setup(){
-        mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-
-        list = new ArrayList<>();
-        String male = Gender.MALE.toString();
-        String female = Gender.FEMALE.toString();
-        String[] firstNames = {"Anton", "Nikolay", "Andrey", "Natalia", "Egor", "", ""};
-        String[] secondNames = {"Trus", "Golubov", "Shulgach", "Mironova", "Pomidorov", "Smyrnova", "Vasyliev"};
-        String[] jobTitles = {"Developer", "Project manager", "Team lead", "HR", "Business analyst", "", ""};
-        String[] genders = {male, male, male, female, male, "notMale", "man"};
-        LocalDate[] dates = {
-                LocalDate.of(2000, 5, 29),
-                LocalDate.of(1998, 8, 20),
-                LocalDate.of(1985, 1, 2),
-                LocalDate.of(1995, 4, 15),
-                LocalDate.of(2001, 2, 8),
-                LocalDate.of(2005, 11, 1),
-                LocalDate.of(2005, 12, 21)
-        };
-        Long[] departments = {5L, 3L, 3L, 4L, 10L, null, null};
-
-        for(int i = 0; i < 7; i++){
-            EmployeeDto employee = new EmployeeDto((long)i + 1, firstNames[i], genders[i]);
-            employee.setSecondName(secondNames[i]);
-            employee.setDateOfBirth(dates[i]);
-            employee.setJobTitle(jobTitles[i]);
-            employee.setDepartmentId(departments[i]);
-
-            list.add(employee);
-        }
-    }
 
     @Test
     public void testGetListWithoutNames() throws Exception {
-        when(service.employeeList(new HashMap<>())).thenReturn(list);
+        when(service.employeeList(new HashMap<>())).thenReturn(Arrays.asList(newEmployeeDto(false)));
 
         mockMvc.perform(get("/employee"))
                 .andExpect(status().isOk())
@@ -97,13 +50,13 @@ public class EmployeeControllerTest {
 
     @Test
     public void testGetListWithNames() throws Exception {
-        String firstName = list.get(forNameSearch).getFirstName();
-        String secondName = list.get(forNameSearch).getSecondName();
+        String firstName = "Ivan";
+        String secondName = "Ivanov";
         Map<String, String> params = new HashMap<>();
         params.put("firstName", firstName);
         params.put("secondName", secondName);
 
-        when(service.employeeList(params)).thenReturn(list.subList(forNameSearch, forNameSearch + 1));
+        when(service.employeeList(params)).thenReturn(Arrays.asList(newEmployeeDto(true)));
 
         //Check get method with path "/employee" and with names parameters
         String parameters = String.format("?firstName=%s&secondName=%s", firstName, secondName);
@@ -117,23 +70,24 @@ public class EmployeeControllerTest {
 
     @Test
     public void testGetEmployeeById() throws Exception {
-        EmployeeDto employee = list.get(forIdSearch);
-        Long id = employee.getEmployeeId();
-        when(service.employeeById(id)).thenReturn(employee);
+        EmployeeDto employeeDto = newEmployeeDto(true);
+        Long id = employeeDto.getEmployeeId();
+        when(service.employeeById(id)).thenReturn(employeeDto);
 
         mockMvc.perform(get("/employee/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("employeeId").isNotEmpty())
-                .andExpect(jsonPath("firstName").value(employee.getFirstName()))
-                .andExpect(jsonPath("secondName").value(employee.getSecondName()))
-                .andExpect(jsonPath("gender").value(employee.getGender()))
-                .andExpect(jsonPath("jobTitle").value(employee.getJobTitle()))
-                .andExpect(jsonPath("departmentId").value(employee.getDepartmentId()))
-                .andExpect(jsonPath("dateOfBirth").value(employee.getDateOfBirth().toString()));
+                .andExpect(jsonPath("firstName").value(employeeDto.getFirstName()))
+                .andExpect(jsonPath("secondName").value(employeeDto.getSecondName()))
+                .andExpect(jsonPath("gender").value(employeeDto.getGender()))
+                .andExpect(jsonPath("jobTitle").value(employeeDto.getJobTitle()))
+                .andExpect(jsonPath("departmentId").value(employeeDto.getDepartmentId()))
+                .andExpect(jsonPath("dateOfBirth").value(employeeDto.getDateOfBirth().toString()));
     }
 
     @Test
     public void testShouldReturn404WhenEmployeesNotFound() throws Exception {
+        Long nonExistentId = 100L;
         when(service.employeeById(nonExistentId)).thenThrow(new EmployeeNotFoundException());
 
         mockMvc.perform(get("/employee/" + nonExistentId))
@@ -143,29 +97,29 @@ public class EmployeeControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        EmployeeDto employee = list.get(forCreating);
-        when(service.createEmployee(employee)).thenReturn(employee);
+        EmployeeDto employeeDto = newEmployeeDto(true);
+        when(service.createEmployee(employeeDto)).thenReturn(employeeDto);
 
         mockMvc.perform(post("/employee")
                         .contentType("application/json")
-                        .content(mapToJson(employee)))
+                        .content(mapToJson(employeeDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("employeeId").isNotEmpty())
-                .andExpect(jsonPath("firstName").value(employee.getFirstName()))
-                .andExpect(jsonPath("secondName").value(employee.getSecondName()))
-                .andExpect(jsonPath("gender").value(employee.getGender()))
-                .andExpect(jsonPath("jobTitle").value(employee.getJobTitle()))
-                .andExpect(jsonPath("departmentId").value(employee.getDepartmentId()))
-                .andExpect(jsonPath("dateOfBirth").value(employee.getDateOfBirth().toString()));
+                .andExpect(jsonPath("firstName").value(employeeDto.getFirstName()))
+                .andExpect(jsonPath("secondName").value(employeeDto.getSecondName()))
+                .andExpect(jsonPath("gender").value(employeeDto.getGender()))
+                .andExpect(jsonPath("jobTitle").value(employeeDto.getJobTitle()))
+                .andExpect(jsonPath("departmentId").value(employeeDto.getDepartmentId()))
+                .andExpect(jsonPath("dateOfBirth").value(employeeDto.getDateOfBirth().toString()));
     }
 
     @Test
     public void testCreateValidation() throws Exception {
-        EmployeeDto employee = list.get(forCreateValidation);
+        EmployeeDto employeeDto = newEmployeeDto(false);
 
         mockMvc.perform(post("/employee")
                         .contentType("application/json")
-                        .content(mapToJson(employee)))
+                        .content(mapToJson(employeeDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status").value("400 BAD_REQUEST"))
                 .andExpect(jsonPath("details").isNotEmpty())
@@ -177,8 +131,18 @@ public class EmployeeControllerTest {
     }
 
     @Test
+    public void testCreateEmployeeWithNullFields() throws Exception {
+        EmployeeDto employeeDto = new EmployeeDto();
+
+        mockMvc.perform(post("/employee")
+                        .contentType("application/json")
+                        .content(mapToJson(employeeDto)))
+                .andExpect(status().isInternalServerError());
+    }
+
+    @Test
     public void testUpdate() throws Exception {
-        EmployeeDto employee = list.get(forUpdating);
+        EmployeeDto employee = newEmployeeDto(true);
         Long id = employee.getEmployeeId();
         when(service.updateEmployee(id, employee)).thenReturn(employee);
 
@@ -198,7 +162,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testUpdateValidation() throws Exception {
-        EmployeeDto employee = list.get(forUpdateValidation);
+        EmployeeDto employee = newEmployeeDto(false);
 
         mockMvc.perform(put("/employee/" + employee.getEmployeeId())
                         .contentType("application/json")
@@ -213,9 +177,16 @@ public class EmployeeControllerTest {
                 .andExpect(jsonPath("$.details.dateOfBirth").isNotEmpty());
     }
 
+    //this test is not working yet, but as soon as I'll merge this branch with master, everything will work fine
+    @Test
+    public void testPathVariableValidation() throws Exception{
+        mockMvc.perform(get("/employee/wrongVariable"))
+                .andExpect(status().isBadRequest());
+    }
+
     @Test
     public void testDelete() throws Exception {
-        Long id = list.get(forDeleting).getEmployeeId();
+        Long id = 1L;
 
         mockMvc.perform(delete("/employee/" + id))
                 .andExpect(status().isOk());
@@ -239,5 +210,19 @@ public class EmployeeControllerTest {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private EmployeeDto newEmployeeDto(boolean valid){
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setEmployeeId(1L);
+        employeeDto.setFirstName(valid ? "Ivan" : "");
+        employeeDto.setSecondName(valid ? "Ivanov" : "");
+        employeeDto.setGender(valid ? "MALE" : "NONE");
+        employeeDto.setDepartmentId(valid ? 1L : null);
+        employeeDto.setJobTitle(valid ? "Manager" : "");
+        employeeDto.setDateOfBirth(valid
+                ? LocalDate.of(2001, 12, 15)
+                : LocalDate.of(2011, 12, 15));
+        return employeeDto;
     }
 }
