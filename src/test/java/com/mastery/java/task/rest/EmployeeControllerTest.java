@@ -41,7 +41,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testGetListWithoutNames() throws Exception {
-        when(service.employeeList(new HashMap<>())).thenReturn(Arrays.asList(newEmployeeDto(false)));
+        when(service.employeeList(new HashMap<>())).thenReturn(Arrays.asList(createInvalidEmployeeDto()));
 
         mockMvc.perform(get("/employee"))
                 .andExpect(status().isOk())
@@ -56,11 +56,11 @@ public class EmployeeControllerTest {
         params.put("firstName", firstName);
         params.put("secondName", secondName);
 
-        when(service.employeeList(params)).thenReturn(Arrays.asList(newEmployeeDto(true)));
+        when(service.employeeList(params)).thenReturn(Arrays.asList(createValidEmployeeDto()));
 
         //Check get method with path "/employee" and with names parameters
-        String parameters = String.format("?firstName=%s&secondName=%s", firstName, secondName);
-        mockMvc.perform(get("/employee" + parameters))
+        String parameters = String.format("/employee?firstName=%s&secondName=%s", firstName, secondName);
+        mockMvc.perform(get(parameters))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[0].firstName").value(firstName))
@@ -70,7 +70,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testGetEmployeeById() throws Exception {
-        EmployeeDto employeeDto = newEmployeeDto(true);
+        EmployeeDto employeeDto = createValidEmployeeDto();
         Long id = employeeDto.getEmployeeId();
         when(service.employeeById(id)).thenReturn(employeeDto);
 
@@ -97,7 +97,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        EmployeeDto employeeDto = newEmployeeDto(true);
+        EmployeeDto employeeDto = createValidEmployeeDto();
         when(service.createEmployee(employeeDto)).thenReturn(employeeDto);
 
         mockMvc.perform(post("/employee")
@@ -115,19 +115,20 @@ public class EmployeeControllerTest {
 
     @Test
     public void testCreateValidation() throws Exception {
-        EmployeeDto employeeDto = newEmployeeDto(false);
+        EmployeeDto employeeDto = createInvalidEmployeeDto();
 
         mockMvc.perform(post("/employee")
                         .contentType("application/json")
                         .content(mapToJson(employeeDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status").value("400 BAD_REQUEST"))
+                .andExpect(jsonPath("message").value("Some of the fields are not valid"))
                 .andExpect(jsonPath("details").isNotEmpty())
-                .andExpect(jsonPath("$.details.firstName").isNotEmpty())
-                .andExpect(jsonPath("$.details.gender").isNotEmpty())
-                .andExpect(jsonPath("$.details.departmentId").isNotEmpty())
-                .andExpect(jsonPath("$.details.jobTitle").isNotEmpty())
-                .andExpect(jsonPath("$.details.dateOfBirth").isNotEmpty());
+                .andExpect(jsonPath("$.details.firstName").value("must not be blank"))
+                .andExpect(jsonPath("$.details.gender").value("Gender is not valid"))
+                .andExpect(jsonPath("$.details.departmentId").value("must not be null"))
+                .andExpect(jsonPath("$.details.jobTitle").value("must not be blank"))
+                .andExpect(jsonPath("$.details.dateOfBirth").value("Person is not an adult"));;
     }
 
     @Test
@@ -142,7 +143,7 @@ public class EmployeeControllerTest {
 
     @Test
     public void testUpdate() throws Exception {
-        EmployeeDto employee = newEmployeeDto(true);
+        EmployeeDto employee = createValidEmployeeDto();
         Long id = employee.getEmployeeId();
         when(service.updateEmployee(id, employee)).thenReturn(employee);
 
@@ -162,19 +163,20 @@ public class EmployeeControllerTest {
 
     @Test
     public void testUpdateValidation() throws Exception {
-        EmployeeDto employee = newEmployeeDto(false);
+        EmployeeDto employee = createInvalidEmployeeDto();
 
         mockMvc.perform(put("/employee/" + employee.getEmployeeId())
                         .contentType("application/json")
                         .content(mapToJson(employee)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status").value("400 BAD_REQUEST"))
+                .andExpect(jsonPath("message").value("Some of the fields are not valid"))
                 .andExpect(jsonPath("details").isNotEmpty())
-                .andExpect(jsonPath("$.details.firstName").isNotEmpty())
-                .andExpect(jsonPath("$.details.gender").isNotEmpty())
-                .andExpect(jsonPath("$.details.departmentId").isNotEmpty())
-                .andExpect(jsonPath("$.details.jobTitle").isNotEmpty())
-                .andExpect(jsonPath("$.details.dateOfBirth").isNotEmpty());
+                .andExpect(jsonPath("$.details.firstName").value("must not be blank"))
+                .andExpect(jsonPath("$.details.gender").value("Gender is not valid"))
+                .andExpect(jsonPath("$.details.departmentId").value("must not be null"))
+                .andExpect(jsonPath("$.details.jobTitle").value("must not be blank"))
+                .andExpect(jsonPath("$.details.dateOfBirth").value("Person is not an adult"));
     }
 
     //this test is not working yet, but as soon as I'll merge this branch with master, everything will work fine
@@ -212,17 +214,27 @@ public class EmployeeControllerTest {
         return null;
     }
 
-    private EmployeeDto newEmployeeDto(boolean valid){
+    private EmployeeDto createValidEmployeeDto(){
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setEmployeeId(1L);
-        employeeDto.setFirstName(valid ? "Ivan" : "");
-        employeeDto.setSecondName(valid ? "Ivanov" : "");
-        employeeDto.setGender(valid ? "MALE" : "NONE");
-        employeeDto.setDepartmentId(valid ? 1L : null);
-        employeeDto.setJobTitle(valid ? "Manager" : "");
-        employeeDto.setDateOfBirth(valid
-                ? LocalDate.of(2001, 12, 15)
-                : LocalDate.of(2011, 12, 15));
+        employeeDto.setFirstName("Ivan");
+        employeeDto.setSecondName("Ivanov");
+        employeeDto.setGender("MALE");
+        employeeDto.setDepartmentId(1L);
+        employeeDto.setJobTitle("Manager");
+        employeeDto.setDateOfBirth(LocalDate.of(2001, 12, 15));
+        return employeeDto;
+    }
+
+    private EmployeeDto createInvalidEmployeeDto(){
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setEmployeeId(1L);
+        employeeDto.setFirstName("");
+        employeeDto.setSecondName("");
+        employeeDto.setGender("NONE");
+        employeeDto.setDepartmentId(null);
+        employeeDto.setJobTitle("");
+        employeeDto.setDateOfBirth(LocalDate.of(2011, 12, 15));
         return employeeDto;
     }
 }
