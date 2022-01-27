@@ -14,7 +14,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 public class ErrorHandlingAdvice {
 
-    private static Logger log = LogManager.getLogger("com.mastery.java.task");
+    private static Logger log = LogManager.getLogger(ErrorHandlingAdvice.class);
 
     @ExceptionHandler(EmployeeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -22,7 +22,7 @@ public class ErrorHandlingAdvice {
         ExceptionMessage message = new ExceptionMessage("Employee not found");
         message.getDetails().put("exception", exception.getMessage());
         message.setStatus(HttpStatus.NOT_FOUND.toString());
-        log.warn("Employee wasn't found with message: {}", exception.getStackTrace().toString());
+        log.warn("Employee wasn't found with exception: ", exception);
         return message;
     }
 
@@ -32,7 +32,7 @@ public class ErrorHandlingAdvice {
         ExceptionMessage message = new ExceptionMessage("Path variables of searched resource are not valid");
         message.setStatus(HttpStatus.BAD_REQUEST.toString());
         message.getDetails().put("exception", exception.getMessage());
-        log.error("Error in parsing path variable: {}", exception.getStackTrace().toString());
+        log.error("Error in parsing path variable: ", exception);
         return message;
     }
 
@@ -47,6 +47,7 @@ public class ErrorHandlingAdvice {
         });
         message.setStatus(HttpStatus.BAD_REQUEST.toString());
         log.error("Some of received fields are not valid: {}", message.getDetails());
+        log.error("Exception message is: ", exception);
         return message;
     }
 
@@ -56,7 +57,7 @@ public class ErrorHandlingAdvice {
         ExceptionMessage message = new ExceptionMessage("Some error with database occurred");
         message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
         message.getDetails().put("exception", exception.getMessage());
-        log.error("Error with database occurred: {}", exception.getStackTrace().toString());
+        log.error("Error with database occurred: ", exception);
         return message;
     }
 
@@ -66,7 +67,7 @@ public class ErrorHandlingAdvice {
         ExceptionMessage message = new ExceptionMessage("Some internal error occurred");
         message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
         message.getDetails().put("exception", exception.getMessage());
-        log.error("Internal error occurred: {}", exception.getStackTrace().toString());
+        log.error("Internal error occurred: ", exception);
         return message;
     }
 

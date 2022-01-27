@@ -15,7 +15,7 @@ import java.util.Map;
 public class EmployeeController {
 
     private EmployeeService employeeService;
-    private static Logger log = LogManager.getLogger("com.mastery.java.task");
+    private static Logger log = LogManager.getLogger(EmployeeController.class);
 
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
@@ -23,7 +23,7 @@ public class EmployeeController {
 
     @GetMapping
     public List<EmployeeDto> employeeList(@RequestParam Map<String, String> params) {
-        log.info("Request for list of employees came");
+        log.info("Request for list of employees came, parameters are: {}", params);
         return employeeService.employeeList(params);
     }
 
@@ -33,15 +33,15 @@ public class EmployeeController {
         return employeeService.employeeById(id);
     }
 
-    @PostMapping()
+    @PostMapping
     public EmployeeDto createEmployee(@RequestBody @Valid EmployeeDto employee){
-        log.info("Request to create new employee came");
+        log.info("Request to create new employee came, fields are: {}", employee);
         return employeeService.createEmployee(employee);
     }
 
     @PutMapping("{id}")
     public EmployeeDto updateEmployee(@PathVariable Long id, @RequestBody @Valid EmployeeDto employee){
-        log.info("Request to update employee with id {} came", id);
+        log.info("Request to update employee with id {} came, fields are: {}", id, employee);
         return employeeService.updateEmployee(id, employee);
     }
 

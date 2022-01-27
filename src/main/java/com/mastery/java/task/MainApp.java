@@ -1,10 +1,12 @@
 package com.mastery.java.task;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
@@ -13,6 +15,7 @@ import springfox.documentation.swagger.web.InMemorySwaggerResourcesProvider;
 import springfox.documentation.swagger.web.SwaggerResource;
 import springfox.documentation.swagger.web.SwaggerResourcesProvider;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +27,13 @@ import static springfox.documentation.spi.DocumentationType.SWAGGER_2;
 @EnableSwagger2
 @SpringBootApplication
 public class MainApp {
+
+    @Value("${app.version}")
+    private String version;
+    @Value("${app.description}")
+    private String description;
+    @Value("${app.title}")
+    private String title;
 
     public static void main(String[] args) {
         SpringApplication.run(MainApp.class, args);
@@ -37,19 +47,6 @@ public class MainApp {
                 .apis(RequestHandlerSelectors.basePackage("com.mastery.java.task"))
                 .build()
                 .apiInfo(apiInformation());
-    }
-
-    private ApiInfo apiInformation(){
-        return new ApiInfo(
-                "Simplewebapp API",
-                "Just simple web app for employee handling",
-                "1.0",
-                "Free to use",
-                new Contact("Axinalis", "https://github.io/Axinalis", "antontrus@gmail.com"),
-                "API License",
-                "some site",
-                Collections.emptyList()
-        );
     }
 
     //For "Documentation" from yaml file
@@ -66,6 +63,19 @@ public class MainApp {
             resources.add(wsResource);
             return resources;
         };
+    }
+
+    private ApiInfo apiInformation(){
+        ApiInfoBuilder builder = new ApiInfoBuilder();
+        builder.description(description);
+        builder.title(title);
+        builder.version(version);
+        builder.termsOfServiceUrl("Free to use");
+        builder.contact(new Contact("Axinalis", "https://github.io/Axinalis", "antontrus@gmail.com"));
+        builder.license("API License");
+        builder.licenseUrl("some site");
+
+        return builder.build();
     }
 }
 

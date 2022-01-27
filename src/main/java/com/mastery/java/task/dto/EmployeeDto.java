@@ -113,4 +113,17 @@ public class EmployeeDto implements Serializable {
         return Objects.hash(employeeId, firstName, gender, secondName, departmentId, jobTitle, dateOfBirth);
     }
 
+    @Override
+    public String toString(){
+        return String.format("[ employeeId=%d; firstName=%s; gender=%s; secondName=%s; " +
+                        "departmentId=%s; jobTitle=%s; dateOfBirth=%s; ]",
+                this.employeeId,
+                this.firstName,
+                this.gender,
+                this.secondName,
+                this.departmentId,
+                this.jobTitle,
+                this.dateOfBirth
+        );
+    }
 }
