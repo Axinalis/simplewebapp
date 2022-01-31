@@ -70,5 +70,4 @@ public class ErrorHandlingAdvice {
         log.error("Internal error occurred: ", exception);
         return message;
     }
-
 }

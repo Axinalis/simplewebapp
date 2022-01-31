@@ -4,16 +4,16 @@ import com.mastery.java.task.dto.EmployeeDto;
 import com.mastery.java.task.entity.Employee;
 import com.mastery.java.task.exceptions.EmployeeNotFoundException;
 import com.mastery.java.task.repository.EmployeeRepository;
-import com.mastery.java.task.service.EmployeeService;
 import com.mastery.java.task.service.EmployeeMapper;
+import com.mastery.java.task.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 public class DefaultEmployeeService implements EmployeeService {
 
     private EmployeeRepository repository;
