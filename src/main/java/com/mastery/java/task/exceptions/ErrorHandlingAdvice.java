@@ -1,5 +1,7 @@
 package com.mastery.java.task.exceptions;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -7,9 +9,12 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class ErrorHandlingAdvice {
+
+    private static Logger log = LogManager.getLogger(ErrorHandlingAdvice.class);
 
     @ExceptionHandler(EmployeeNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -17,6 +22,17 @@ public class ErrorHandlingAdvice {
         ExceptionMessage message = new ExceptionMessage("Employee not found");
         message.getDetails().put("exception", exception.getMessage());
         message.setStatus(HttpStatus.NOT_FOUND.toString());
+        log.warn("Employee wasn't found with exception: ", exception);
+        return message;
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionMessage handlePathVariableException(MethodArgumentTypeMismatchException exception){
+        ExceptionMessage message = new ExceptionMessage("Path variables of searched resource are not valid");
+        message.setStatus(HttpStatus.BAD_REQUEST.toString());
+        message.getDetails().put("exception", exception.getMessage());
+        log.error("Error in parsing path variable: ", exception);
         return message;
     }
 
@@ -30,6 +46,8 @@ public class ErrorHandlingAdvice {
             message.getDetails().put(fieldName, errorMessage);
         });
         message.setStatus(HttpStatus.BAD_REQUEST.toString());
+        log.error("Some of received fields are not valid: {}", message.getDetails());
+        log.error("Exception message is: ", exception);
         return message;
     }
 
@@ -38,6 +56,8 @@ public class ErrorHandlingAdvice {
     public ExceptionMessage handleDatabaseException(PSQLException exception){
         ExceptionMessage message = new ExceptionMessage("Some error with database occurred");
         message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
+        message.getDetails().put("exception", exception.getMessage());
+        log.error("Error with database occurred: ", exception);
         return message;
     }
 
@@ -46,8 +66,8 @@ public class ErrorHandlingAdvice {
     public ExceptionMessage handleRuntimeException(RuntimeException exception){
         ExceptionMessage message = new ExceptionMessage("Some internal error occurred");
         message.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.toString());
-        //For now, until there is no loggers in project
-        message.getDetails().put("Type of exception", exception.getClass().getName());
+        message.getDetails().put("exception", exception.getMessage());
+        log.error("Internal error occurred: ", exception);
         return message;
     }
 }

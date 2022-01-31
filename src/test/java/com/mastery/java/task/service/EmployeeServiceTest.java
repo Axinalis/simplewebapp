@@ -6,6 +6,7 @@ import com.mastery.java.task.dto.Gender;
 import com.mastery.java.task.repository.EmployeeRepository;
 import com.mastery.java.task.service.impl.DefaultEmployeeService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -82,6 +83,7 @@ public class EmployeeServiceTest {
         assertTrue(list.stream().noneMatch(employee -> employee.getEmployeeId().equals(50L)));
     }
 
+    @Ignore
     @Test
     public void testEmployeeById(){
         when(repository.findById(1L)).thenReturn(Optional.of(list.get(0)));

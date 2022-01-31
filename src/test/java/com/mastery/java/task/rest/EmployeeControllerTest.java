@@ -141,6 +141,7 @@ public class EmployeeControllerTest {
                 .andExpect(status().isInternalServerError());
     }
 
+    @Ignore
     @Test
     public void testUpdate() throws Exception {
         EmployeeDto employee = createValidEmployeeDto();
