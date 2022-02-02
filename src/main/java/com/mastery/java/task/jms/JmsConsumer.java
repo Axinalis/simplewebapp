@@ -12,24 +12,35 @@ import org.springframework.stereotype.Component;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.util.Set;
 
 @Component
 public class JmsConsumer implements MessageListener {
 
-    @Autowired
     private EmployeeService service;
     private Logger log = LogManager.getLogger(JmsConsumer.class);
+    private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+    public JmsConsumer(@Autowired EmployeeService service) {
+        this.service = service;
+    }
 
     @Override
     @JmsListener(destination = "${active-mq.topic}")
     public void onMessage(Message message) {
         EmployeeDto employee;
         try{
-            log.info("Mapping received object to EmployeeDto class");
+            log.info("Employee message consumed from Queue");
             ObjectMessage objMessage = (ObjectMessage) message;
             employee = (EmployeeDto) objMessage.getObject();
         } catch (Exception ex){
             log.error("Error while handling received message: ", ex);
+            return;
+        }
+        if(!employeeIsValid(employee)){
             return;
         }
         //just for checking if information is valid
@@ -44,6 +55,19 @@ public class JmsConsumer implements MessageListener {
             }
         } catch (EmployeeNotFoundException ex){
             log.error("An error occurred while updating database: ", ex);
+        }
+    }
+
+    private boolean employeeIsValid(EmployeeDto employee){
+        Set<ConstraintViolation<EmployeeDto>> errors = validator.validate(employee);
+        if(errors.size() > 0){
+            log.error("Fields of employee are not valid:");
+            for(ConstraintViolation<EmployeeDto> error : errors){
+                log.error("{} : {}", error.getPropertyPath(), error.getMessage());
+            }
+            return false;
+        } else {
+            return true;
         }
     }
 }
