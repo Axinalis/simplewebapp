@@ -83,7 +83,6 @@ public class EmployeeServiceTest {
         assertTrue(list.stream().noneMatch(employee -> employee.getEmployeeId().equals(50L)));
     }
 
-    @Ignore
     @Test
     public void testEmployeeById(){
         when(repository.findById(1L)).thenReturn(Optional.of(list.get(0)));
@@ -97,7 +96,7 @@ public class EmployeeServiceTest {
         assertEquals("Anton", buf.getFirstName());
         assertEquals("Trus", buf.getSecondName());
         assertEquals("Developer", buf.getJobTitle());
-        assertEquals(Gender.MALE, buf.getGender());
+        assertEquals(Gender.MALE.name(), buf.getGender());
         assertEquals(5L, (long) buf.getDepartmentId());
     }
 

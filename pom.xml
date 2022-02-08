@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<version>2.6.2</version>
+			<version>2.5.6</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -144,12 +144,24 @@
 					<argLine>
 						--add-opens=java.base/java.lang=ALL-UNNAMED
 					</argLine>
+					<excludes>
+						com.mastery.java.task.HttpRequestTest
+					</excludes>
+					<forkCount>
+						0
+					</forkCount>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.liquibase</groupId>
 				<artifactId>liquibase-maven-plugin</artifactId>
 				<version>4.7.1</version>
+				<configuration>
+					<changeLogFile>db/changelog/db.changelog-master.yaml</changeLogFile>
+					<url>jdbc:postgresql://db:5432/employeedb</url>
+					<username>postgres</username>
+					<password>password</password>
+				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>org.liquibase.ext</groupId>
@@ -157,6 +169,37 @@
 						<version>4.7.1</version>
 					</dependency>
 				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/libs</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>libs/</classpathPrefix>
+							<mainClass>
+								com.mastery.java.task.MainApp
+							</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

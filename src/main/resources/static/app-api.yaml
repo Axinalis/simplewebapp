@@ -198,8 +198,8 @@ definitions:
       status:
         type: "string"
 externalDocs:
-  description: "There'snothing more to know about this app"
+  description: "There's nothing more to know about this app"
   url: "http://swagger.io"
 # Added by API Auto Mocking Plugin
-host: virtserver.swaggerhub.com
-basePath: /Axinalis/MyFirstPetAPI/1.0.0
+host: localhost:8080
+basePath: /simplewebapp
