@@ -144,9 +144,6 @@
 					<argLine>
 						--add-opens=java.base/java.lang=ALL-UNNAMED
 					</argLine>
-					<excludes>
-						com.mastery.java.task.HttpRequestTest
-					</excludes>
 					<forkCount>
 						0
 					</forkCount>

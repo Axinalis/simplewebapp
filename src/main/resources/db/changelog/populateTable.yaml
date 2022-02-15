@@ -4,7 +4,7 @@ databaseChangeLog:
       id: 2
       author: maybeAxinalis
       labels: "PopulateTable"
-      runAlways: true
+      runAlways: false
       comment: "Insert default employees"
       changes:
         - insert:
