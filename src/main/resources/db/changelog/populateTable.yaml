@@ -1,0 +1,97 @@
+databaseChangeLog:
+  - logicalFilePath: db.changelog-master.yaml
+  - changeSet:
+      id: 2
+      author: maybeAxinalis
+      labels: "PopulateTable"
+      runAlways: false
+      comment: "Insert default employees"
+      changes:
+        - insert:
+            tableName: employee
+            columns:
+              - column:
+                  name: first_name
+                  value: "Anton"
+              - column:
+                  name: second_name
+                  value: "Trus"
+              - column:
+                  name: department_id
+                  value: 5
+              - column:
+                  name: job_title
+                  value: "Junior Developer"
+              - column:
+                  name: gender
+                  value: "MALE"
+              - column:
+                  name: date_of_birth
+                  value: "2000-05-29"
+        - insert:
+            tableName: employee
+            columns:
+              - column:
+                  name: first_name
+                  value: "Nikolay"
+              - column:
+                  name: second_name
+                  value: "Golubov"
+              - column:
+                  name: department_id
+                  value: 3
+              - column:
+                  name: job_title
+                  value: "Project Manager"
+              - column:
+                  name: gender
+                  value: "MALE"
+              - column:
+                  name: date_of_birth
+                  value: "1998-08-20"
+        - insert:
+            tableName: employee
+            columns:
+              - column:
+                  name: first_name
+                  value: "Andrey"
+              - column:
+                  name: second_name
+                  value: "Shulgach"
+              - column:
+                  name: department_id
+                  value: 3
+              - column:
+                  name: job_title
+                  value: "Team lead"
+              - column:
+                  name: gender
+                  value: "MALE"
+              - column:
+                  name: date_of_birth
+                  value: "1985-01-02"
+        - insert:
+            tableName: employee
+            columns:
+              - column:
+                  name: first_name
+                  value: "Natalia"
+              - column:
+                  name: second_name
+                  value: "Mironova"
+              - column:
+                  name: department_id
+                  value: 4
+              - column:
+                  name: job_title
+                  value: "HR"
+              - column:
+                  name: gender
+                  value: "FEMALE"
+              - column:
+                  name: date_of_birth
+                  value: "1995-04-15"
+      rollback:
+        - delete:
+            tableName: employee
+            where: first_name in ('Anton', 'Nikolay', 'Andrey', 'Natalia')
