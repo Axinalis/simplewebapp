@@ -37,7 +37,7 @@ paths:
             items:
               $ref: "#/definitions/Employee"
         "500":
-          description: "Som internal error occured"
+          description: "Some internal error occurred"
           schema:
             $ref: "#/definitions/exceptionMessage"
     post:
@@ -67,7 +67,7 @@ paths:
           schema:
             $ref: "#/definitions/exceptionMessage"
         "500":
-          description: "Some internal error occured"
+          description: "Some internal error occurred"
           schema:
             $ref: "#/definitions/exceptionMessage"
   /employee/{id}:
@@ -131,7 +131,7 @@ paths:
           schema:
             $ref: "#/definitions/exceptionMessage"
         "500":
-          description: "Some internal error occured"
+          description: "Some internal error occurred"
           schema:
             $ref: "#/definitions/exceptionMessage"
     delete:

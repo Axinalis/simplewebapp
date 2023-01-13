@@ -1,11 +1,11 @@
-### Practical task
+## Simplewebapp
 
-Using the provided skeleton, implement the REST service.
+Simple REST service for managing employees via CRUD operations.
 
-Useful link: https://spring.io/guides/gs/rest-service/
+Written with Spring boot, PostgreSQL and ActiveMQ.
+To start the project you need Docker and Docker-compose
 
-In addition you could use Swagger to provide API documentation.
-        
-        
-  
+`docker-compose up`
+
+All the endpoints are described at http://localhost:8080/simplewebapp/v2/api-docs
 
